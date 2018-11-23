@@ -20,6 +20,7 @@ type Document struct {
 	Id   string
 	Name string
 	Size int64
+	Path string `json:"-"`
 }
 
 func getDocuments(w http.ResponseWriter, r *http.Request) {
@@ -27,6 +28,31 @@ func getDocuments(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	log.Printf("Data is %v\n", docs)
 	json.NewEncoder(w).Encode(docs)
+}
+
+func getDocumentsById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	docs := findDocuments(vars["id"])
+	if len(docs) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintln(w, "Not found")
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(docs[0])
+	}
+}
+
+func deleteDocumentsById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	docs := findDocuments(vars["id"])
+	if len(docs) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintln(w, "Not found")
+	} else {
+		handleError(os.Remove(docs[0].Path))
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "DELETED")
+	}
 }
 
 func findDocuments(id string) []Document {
@@ -57,7 +83,7 @@ func fileToDocument(f string) Document {
 	defer file.Close()
 	info, err := file.Stat()
 	handleError(err)
-	return Document{Id: checksum(file), Name: file.Name(), Size: info.Size()}
+	return Document{Id: checksum(file), Name: file.Name(), Size: info.Size(), Path: f}
 }
 
 func checksum(f *os.File) string {
@@ -77,5 +103,7 @@ func handleError(err error) {
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/documents", getDocuments).Methods("GET")
+	router.HandleFunc("/documents/{id}", getDocumentsById).Methods("GET")
+	router.HandleFunc("/documents/{id}", deleteDocumentsById).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":9000", router))
 }
