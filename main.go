@@ -26,7 +26,6 @@ type Document struct {
 func getDocuments(w http.ResponseWriter, r *http.Request) {
 	docs := findDocuments("")
 	w.Header().Set("Content-Type", "application/json")
-	log.Printf("Data is %v\n", docs)
 	json.NewEncoder(w).Encode(docs)
 }
 
@@ -127,7 +126,7 @@ func checksum(f *os.File) string {
 
 func handleError(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Println("ERROR: ", err)
 	}
 }
 
