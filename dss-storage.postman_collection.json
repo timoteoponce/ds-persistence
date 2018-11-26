@@ -1,0 +1,153 @@
+{
+	"info": {
+		"_postman_id": "2b83baec-c813-492c-84f7-9a7708733a6c",
+		"name": "dss-storage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getDocuments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9000/documents",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"documents"
+					]
+				},
+				"description": "Get all documents"
+			},
+			"response": []
+		},
+		{
+			"name": "getDocumentsById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9000/documents/:docId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"documents",
+						":docId"
+					],
+					"variable": [
+						{
+							"key": "docId",
+							"value": "fb9f35f74a3c0a0ecdb3d5776744454f"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteDocumentById",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9000/documents/:docId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"documents",
+						":docId"
+					],
+					"variable": [
+						{
+							"key": "docId",
+							"value": "4f71ab48495d01c0f2dc9ac50e7d1261"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "postDocuments",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "uploadfile",
+							"type": "file",
+							"src": ""
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:9000/documents",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"documents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "downloadDocumentById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:9000/documents/download/:docId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"documents",
+						"download",
+						":docId"
+					],
+					"variable": [
+						{
+							"key": "docId",
+							"value": "fb9f35f74a3c0a0ecdb3d5776744454f"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

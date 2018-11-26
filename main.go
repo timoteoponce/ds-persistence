@@ -51,8 +51,39 @@ func deleteDocumentsById(w http.ResponseWriter, r *http.Request) {
 	} else {
 		handleError(os.Remove(docs[0].Path))
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, "DELETED")
+		fmt.Fprintln(w, "File deleted ", docs[0].Id, docs[0].Name)
 	}
+}
+
+func serveDownloadById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	docs := findDocuments(vars["id"])
+	if len(docs) == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintln(w, "Not found")
+	} else {
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", docs[0].Name))
+		w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+		f, err := os.Open(docs[0].Path)
+		handleError(err)
+		io.Copy(w, f)
+	}
+}
+
+func addDocument(w http.ResponseWriter, r *http.Request) {
+	handleError(r.ParseForm())
+	uploadFile, handler, err := r.FormFile("uploadfile")
+	handleError(err)
+	defer uploadFile.Close()
+	f, err := os.Create(fmt.Sprintf("%s%s", StoragePath, handler.Filename))
+	io.Copy(f, uploadFile)
+	defer f.Close()
+	log.Printf("File created %v", handler.Filename)
+	// return the file metadata
+	doc := fileToDocument(f.Name())
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(doc)
+
 }
 
 func findDocuments(id string) []Document {
@@ -104,6 +135,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/documents", getDocuments).Methods("GET")
 	router.HandleFunc("/documents/{id}", getDocumentsById).Methods("GET")
+	router.HandleFunc("/documents/download/{id}", serveDownloadById).Methods("GET")
+	router.HandleFunc("/documents", addDocument).Methods("POST")
 	router.HandleFunc("/documents/{id}", deleteDocumentsById).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":9000", router))
 }
